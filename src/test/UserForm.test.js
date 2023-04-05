@@ -16,17 +16,19 @@ test('it shows two inputs and a button', () => {
 });
 
 test('it calls onUserAdd when the form is submitted', () => {
-    // NOT THE BEST IMPLEMENTATION
-    const argList = [];
-    const callback = (...args) => {
-        argList.push(args);
-    }
+    // Mock (fake / doesn't do anything) function used when we need to make sure a component calls a callback
+    const mock = jest.fn();
 
     // Try to render component
-    render(<UserForm onUserAdd={callback} />);
+    render(<UserForm onUserAdd={mock} />);
 
     // Find the two inputs
-    const [nameInput, emailInput] = screen.getAllByRole('textbox');
+    const nameInput = screen.getByRole('textbox', {
+        name: /name/i,
+    });
+    const emailInput = screen.getByRole('textbox', {
+        name: /email/i,
+    });
     
     // Simulate typing in name input
     user.click(nameInput);
@@ -43,6 +45,6 @@ test('it calls onUserAdd when the form is submitted', () => {
     user.click(button);
 
     // Assertion to make sure callback onUserAdd get called with name/email
-    expect(argList).toHaveLength(1);
-    expect(argList[0][0]).toEqual({ name: 'Jane', email: 'jane@gmail.com' });
+    expect(mock).toHaveBeenCalled();
+    expect(mock).toHaveBeenCalledWith({ name: 'Jane', email: 'jane@gmail.com' });
 });
